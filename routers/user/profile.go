@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"path"
 	"strings"
+	"strconv"
 
 	"code.gitea.io/gitea/models"
 	"code.gitea.io/gitea/modules/base"
@@ -268,5 +269,26 @@ func Action(ctx *context.Context) {
 		return
 	}
 
+	ctx.RedirectToFirst(ctx.Query("redirect_to"), u.HomeLink())
+}
+
+func TransferP(ctx *context.Context) {
+	//减少发送者点数
+	//增加接收者点数
+	//创建transfer记录
+	u := GetUserByParams(ctx)
+	var err error
+	Qty, err := strconv.Atoi(ctx.Query("qty"))
+	if err != nil {
+		return
+	}
+	err = models.TransferPoint(ctx.User.ID,
+							   ctx.Query("why"),
+							   u.ID,
+							   Qty)
+	if err != nil {
+		ctx.ServerError("Transfer", err)
+		return
+	}
 	ctx.RedirectToFirst(ctx.Query("redirect_to"), u.HomeLink())
 }

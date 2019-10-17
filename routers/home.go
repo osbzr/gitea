@@ -210,7 +210,7 @@ func RenderUserSearch(ctx *context.Context, opts *models.SearchUserOptions, tplN
 		orderBy = models.SearchOrderByAlphabetically
 	default:
 		ctx.Data["SortType"] = "alphabetically"
-		orderBy = models.SearchOrderByAlphabetically
+		orderBy = models.SearchOrderByPoint
 	}
 
 	opts.Keyword = strings.Trim(ctx.Query("q"), " ")

@@ -520,6 +520,7 @@ func RegisterRoutes(m *macaron.Macaron) {
 
 	m.Group("/:username", func() {
 		m.Get("/action/:action", user.Action)
+		m.Post("/action/transfer_point", user.TransferP)
 	}, reqSignIn)
 
 	if macaron.Env == macaron.DEV {

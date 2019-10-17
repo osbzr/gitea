@@ -118,6 +118,7 @@ type User struct {
 	Salt        string `xorm:"VARCHAR(10)"`
 	Language    string `xorm:"VARCHAR(5)"`
 	Description string
+	Point       int    `xorm:"NOT NULL DEFAULT 0"`
 
 	CreatedUnix   timeutil.TimeStamp `xorm:"INDEX created"`
 	UpdatedUnix   timeutil.TimeStamp `xorm:"INDEX updated"`
