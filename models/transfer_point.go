@@ -26,9 +26,9 @@ func TransferPoint(FromID int64, Why string, ToID int64, Qty int) (err error) {
 		return err
 	}
 
-//	if _, err = sess.Insert(&Transfer{FromID: FromID, ToID: ToID, Why: Why, Qty: Qty}); err != nil {
-//		return err
-//	}
+	if _, err = sess.Insert(&Transfer{FromID: FromID, ToID: ToID, Why: Why, Qty: Qty}); err != nil {
+		return err
+	}
 
 	if _, err = sess.Exec("UPDATE `user` SET point = point + ? WHERE id = ?", Qty, ToID); err != nil {
 		return err

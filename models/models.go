@@ -113,6 +113,7 @@ func init() {
 		new(OAuth2AuthorizationCode),
 		new(OAuth2Grant),
 		new(Task),
+		new(Transfer),
 	)
 
 	gonicNames := []string{"SSL", "UID"}

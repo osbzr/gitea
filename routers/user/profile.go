@@ -280,6 +280,11 @@ func TransferP(ctx *context.Context) {
 	var err error
 	Qty, err := strconv.Atoi(ctx.Query("qty"))
 	if err != nil {
+		ctx.Flash.Error("请输入数字")
+		return
+	}
+	if ctx.User.Point < Qty {
+		ctx.Flash.Error("余额不足！")
 		return
 	}
 	err = models.TransferPoint(ctx.User.ID,
