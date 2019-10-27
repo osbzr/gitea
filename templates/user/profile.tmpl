@@ -94,13 +94,12 @@
 							<input type="hidden" name="uid" value="{{.SignedUser.ID}}">
 							<input type="hidden" name="toid" value="{{ .Owner.ID }}">
 							<div class="inline field ui left">
-									<div class="ui input">
+									<div class="ui">
 									    <input name="why" placeholder="为什么" autocomplete="off" required>
-										发送
-										<input name="qty" placeholder="多少个赞" autocomplete="off" required>
+										<input name="qty" type="number" placeholder="转给他多少积分" autocomplete="off" required>
+										<button class="ui green button">确定</button>
 									</div>
 							</div>
-							<button class="ui green button"><i class="octicon octicon-thumbsup"/></button>
 						</form>
 							</li>
 							{{end}}
