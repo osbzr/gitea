@@ -11,7 +11,9 @@
 				<a href="{{AppSubUrl}}/{{.Owner.Name}}">{{.Owner.Name}}</a>
 				<div class="divider"> / </div>
 				<a href="{{$.RepoLink}}">{{.Name}}</a>
-				项目积分剩余{{.Point}}，下一贡献奖励{{.Percent}}%，即 {{.NextPoint}}积分
+				{{if gt .NextPoint 0}}
+				    <div>项目积分剩余{{.Point}}，下一贡献奖励{{.Percent}}%，即 {{.NextPoint}}积分</div>
+				{{end}}
 				{{if and .RelAvatarLink .IsPrivate}}<i class="mega-octicon octicon-lock"></i>{{end}}
 				{{if .IsArchived}}<i class="archive icon archived-icon"></i>{{end}}
 				{{if .IsMirror}}<div class="fork-flag">{{$.i18n.Tr "repo.mirror_from"}} <a target="_blank" rel="noopener noreferrer" href="{{MirrorAddress $.Mirror}}">{{MirrorAddress $.Mirror}}</a></div>{{end}}
@@ -94,6 +96,9 @@
 						<i class="octicon octicon-pulse"></i> {{.i18n.Tr "repo.activity"}}
 					</a>
 				{{end}}
+				<a class="{{if .PageIsFund}}active{{end}} item" href="{{.RepoLink}}/fund/list">
+						<i class="octicon octicon-pulse"></i> 捐赠
+				</a>
 
 				{{template "custom/extra_tabs" .}}
 

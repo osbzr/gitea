@@ -65,7 +65,7 @@ func SearchTrans(opts *SearchTransOptions) (trans []*Transfer, _ int64, _ error)
 func TransferPoint(FromID int64, Why string, ToID int64, Qty int) (err error) {
 
 	sess := x.NewSession()
-	//判断是否足够转
+
 	defer sess.Close()
 	if err = sess.Begin(); err != nil {
 		return err
@@ -83,4 +83,25 @@ func TransferPoint(FromID int64, Why string, ToID int64, Qty int) (err error) {
 		return err
 	}
 	return sess.Commit()
+}
+
+// Fund contains the fund information
+type Fund struct {
+	ID                int64 `xorm:"pk autoincr"`
+	Name              string
+	RepoID            int64 `xorm:"INDEX"`
+	Qty               int64
+}
+
+type FundList []*Fund
+
+// GetFunds returns a list of Funds of given repository.
+func GetFunds(repoID int64, page int) (FundList, error) {
+	funds := make([]*Fund, 0, setting.UI.IssuePagingNum)
+	sess := x.Where("repo_id = ? ", repoID)
+	if page > 0 {
+		sess = sess.Limit(setting.UI.IssuePagingNum, (page-1)*setting.UI.IssuePagingNum)
+	}
+
+	return funds, sess.Find(&funds)
 }
