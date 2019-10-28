@@ -147,6 +147,9 @@ type Repository struct {
 	Name                string                 `xorm:"INDEX NOT NULL"`
 	Description         string                 `xorm:"TEXT"`
 	Website             string                 `xorm:"VARCHAR(2048)"`
+	Percent             int64
+	Point               int64
+	NextPoint           int64
 	OriginalServiceType structs.GitServiceType `xorm:"index"`
 	OriginalURL         string                 `xorm:"VARCHAR(2048)"`
 	DefaultBranch       string
