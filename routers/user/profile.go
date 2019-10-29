@@ -285,6 +285,7 @@ func TransferP(ctx *context.Context) {
 	}
 	if ctx.User.Point < Qty {
 		ctx.Flash.Error("余额不足！")
+		ctx.RedirectToFirst(ctx.Query("redirect_to"), u.HomeLink())
 		return
 	}
 	err = models.TransferPoint(ctx.User.Name,
