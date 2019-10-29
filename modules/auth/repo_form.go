@@ -154,6 +154,7 @@ type ProtectBranchForm struct {
 	EnableWhitelist         bool
 	WhitelistUsers          string
 	WhitelistTeams          string
+	WhitelistDeployKeys     bool
 	EnableMergeWhitelist    bool
 	MergeWhitelistUsers     string
 	MergeWhitelistTeams     string

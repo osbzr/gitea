@@ -12,7 +12,7 @@ import (
 	"code.gitea.io/gitea/modules/timeutil"
 	"xorm.io/builder"
 
-	"github.com/go-xorm/xorm"
+	"xorm.io/xorm"
 )
 
 // Milestone represents a milestone of repository.
@@ -306,7 +306,11 @@ func ChangeMilestoneStatus(m *Milestone, isClosed bool) (err error) {
 	}
 
 	m.IsClosed = isClosed
-	if _, err := sess.ID(m.ID).Cols("is_closed").Update(m); err != nil {
+	if isClosed {
+		m.ClosedDateUnix = timeutil.TimeStampNow()
+	}
+
+	if _, err := sess.ID(m.ID).Cols("is_closed", "closed_date_unix").Update(m); err != nil {
 		return err
 	}
 
