@@ -100,6 +100,9 @@ func SettingsPost(ctx *context.Context, form auth.RepoSettingForm) {
 		repo.LowerName = strings.ToLower(newRepoName)
 		repo.Description = form.Description
 		repo.Website = form.Website
+		repo.Percent = form.Percent
+		repo.Point = form.Point
+		repo.NextPoint = int64(float64(repo.Point) * float64(repo.Percent) * 0.01)
 
 		// Visibility of forked repository is forced sync with base repository.
 		if repo.IsFork {

@@ -268,6 +268,7 @@ func RegisterRoutes(m *macaron.Macaron) {
 		m.Get("", func(ctx *context.Context) {
 			ctx.Redirect(setting.AppSubURL + "/explore/repos")
 		})
+		m.Get("/trans", routers.ExploreTrans)
 		m.Get("/repos", routers.ExploreRepos)
 		m.Get("/users", routers.ExploreUsers)
 		m.Get("/organizations", routers.ExploreOrganizations)
@@ -520,6 +521,7 @@ func RegisterRoutes(m *macaron.Macaron) {
 
 	m.Group("/:username", func() {
 		m.Get("/action/:action", user.Action)
+		m.Post("/action/transfer_point", user.TransferP)
 	}, reqSignIn)
 
 	if macaron.Env == macaron.DEV {
@@ -846,6 +848,11 @@ func RegisterRoutes(m *macaron.Macaron) {
 			m.Get("/raw/*", repo.WikiRaw)
 		}, repo.MustEnableWiki)
 
+		m.Group("/funds", func(){
+			m.Get("", repo.Funds)
+			m.Post("/action/funding",repo.Funding)
+		},context.RepoRef())
+		
 		m.Group("/activity", func() {
 			m.Get("", repo.Activity)
 			m.Get("/:period", repo.Activity)

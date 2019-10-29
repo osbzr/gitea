@@ -16,6 +16,14 @@
 					<input id="repo_name" name="repo_name" value="{{.Repository.Name}}" data-repo-name="{{.Repository.Name}}" autofocus required>
 				</div>
 				{{if not .Repository.IsFork}}
+				    <div class="inline field">
+					    <label for="point">项目积分余额</label>
+					    <input id="point" name="point" type="number" value="{{.Repository.Point}}">
+				    </div>
+				    <div class="inline field">
+					    <label for="percent">每贡献奖励百分比</label>
+					    <input id="percent" name="percent" type="number" value="{{.Repository.Percent}}"><span>%</span>
+				    </div>
 					<div class="inline field">
 						<label>{{.i18n.Tr "repo.visibility"}}</label>
 						<div class="ui checkbox">

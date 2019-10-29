@@ -1,6 +1,7 @@
 {{template "base/head" .}}
 <div class="user profile">
 	<div class="ui container">
+	    {{template "base/alert" .}}
 		<div class="ui stackable grid">
 			<div class="ui five wide column">
 				<div class="ui card">
@@ -48,7 +49,7 @@
 									</li>
 								{{end}}
 							{{end}}
-							<li><i class="octicon octicon-clock"></i> {{.i18n.Tr "user.join_on"}} {{.Owner.CreatedUnix.FormatShort}}</li>
+							<li><i class="octicon octicon-clock"></i> {{.i18n.Tr "user.join_on"}} {{.Owner.CreatedUnix.FormatShort}} 积分 {{.Owner.Point}}</li>
 							<li>
 								<i class="octicon octicon-person"></i>
 								<a href="{{.Owner.HomeLink}}/followers">
@@ -87,6 +88,19 @@
 								{{else}}
 								<a class="ui basic green button" href="{{.Link}}/action/follow?redirect_to={{$.Link}}"><i class="octicon octicon-person"></i> {{.i18n.Tr "user.follow"}}</a>
 								{{end}}
+							</li>
+							<li>
+					    <form class="ui form" id="transfer-point-form" action="{{.Link}}/action/transfer_point" method="post">
+							{{.CsrfTokenHtml}}
+							<input type="hidden" name="toid" value="{{ .Owner.Name }}">
+							<div class="inline field ui left">
+									<div class="ui">
+									    <input name="why" placeholder="为什么" autocomplete="off" required>
+										<input name="qty" type="number" placeholder="转给他多少积分" autocomplete="off" required>
+										<button class="ui green button">确定</button>
+									</div>
+							</div>
+						</form>
 							</li>
 							{{end}}
 						</ul>

@@ -28,6 +28,8 @@ const (
 	tplExploreUsers base.TplName = "explore/users"
 	// tplExploreOrganizations explore organizations page template
 	tplExploreOrganizations base.TplName = "explore/organizations"
+
+	tplExploreTrans base.TplName = "explore/trans"
 	// tplExploreCode explore code page template
 	tplExploreCode base.TplName = "explore/code"
 )
@@ -210,7 +212,7 @@ func RenderUserSearch(ctx *context.Context, opts *models.SearchUserOptions, tplN
 		orderBy = models.SearchOrderByAlphabetically
 	default:
 		ctx.Data["SortType"] = "alphabetically"
-		orderBy = models.SearchOrderByAlphabetically
+		orderBy = models.SearchOrderByPoint
 	}
 
 	opts.Keyword = strings.Trim(ctx.Query("q"), " ")
@@ -268,6 +270,63 @@ func ExploreOrganizations(ctx *context.Context) {
 		Private:  ctx.User != nil,
 		OwnerID:  ownerID,
 	}, tplExploreOrganizations)
+}
+
+// RenderUserSearch render user search page
+func RenderTransSearch(ctx *context.Context, opts *models.SearchTransOptions, tplName base.TplName) {
+	opts.Page = ctx.QueryInt("page")
+	if opts.Page <= 1 {
+		opts.Page = 1
+	}
+
+	var (
+		trans   []*models.Transfer
+		count   int64
+		err     error
+		orderBy models.SearchOrderBy
+	)
+
+	ctx.Data["SortType"] = ctx.Query("sort")
+	switch ctx.Query("sort") {
+	case "newest":
+		orderBy = models.SearchOrderByIDReverse
+	case "oldest":
+		orderBy = models.SearchOrderByID
+	default:
+		ctx.Data["SortType"] = "alphabetically"
+		orderBy = models.SearchOrderByIDReverse
+	}
+
+	opts.Keyword = strings.Trim(ctx.Query("q"), " ")
+	opts.OrderBy = orderBy
+	if len(opts.Keyword) == 0 || isKeywordValid(opts.Keyword) {
+		trans, count, err = models.SearchTrans(opts)
+		if err != nil {
+			ctx.ServerError("SearchTrans", err)
+			return
+		}
+	}
+	ctx.Data["Keyword"] = opts.Keyword
+	ctx.Data["Total"] = count
+	ctx.Data["Trans"] = trans
+	ctx.Data["IsRepoIndexerEnabled"] = setting.Indexer.RepoIndexerEnabled
+
+	pager := context.NewPagination(int(count), opts.PageSize, opts.Page, 5)
+	pager.SetDefaultParams(ctx)
+	ctx.Data["Page"] = pager
+
+	ctx.HTML(200, tplName)
+}
+
+func ExploreTrans(ctx *context.Context) {
+	ctx.Data["Title"] = ctx.Tr("explore")
+	ctx.Data["PageIsExplore"] = true
+	ctx.Data["PageIsExploreTrans"] = true
+	ctx.Data["IsRepoIndexerEnabled"] = setting.Indexer.RepoIndexerEnabled
+
+	RenderTransSearch(ctx, &models.SearchTransOptions{
+		PageSize: setting.UI.ExplorePagingNum,
+	}, tplExploreTrans)
 }
 
 // ExploreCode render explore code page

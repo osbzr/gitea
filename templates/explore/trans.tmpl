@@ -1,0 +1,22 @@
+{{template "base/head" .}}
+<div class="explore users">
+	{{template "explore/navbar" .}}
+	<div class="ui container">
+		{{template "explore/search" .}}
+
+		<div class="ui user list">
+			{{range .Trans}}
+				<div class="item">
+				  <div class="content">
+				  {{.CreatedUnix.FormatShort}} <a href="/{{.FromID}}">{{.FromID}}</a>转了{{.Qty}}积分给<a href="/{{.ToID}}">{{.ToID}}</a> ，{{.Why}}。
+				  </div>
+				</div>
+			{{else}}
+				<div>no result</div>
+			{{end}}
+		</div>
+
+		{{template "base/paginate" .}}
+	</div>
+</div>
+{{template "base/footer" .}}
