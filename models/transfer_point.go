@@ -13,8 +13,8 @@ import (
 
 type Transfer struct {
 	ID       int64 `xorm:"pk autoincr"`
-	FromID   int64 
-	ToID     int64
+	FromID   string
+	ToID     string
 	Why      string
 	Qty      int
 	CreatedUnix   timeutil.TimeStamp `xorm:"INDEX created"`
@@ -62,7 +62,7 @@ func SearchTrans(opts *SearchTransOptions) (trans []*Transfer, _ int64, _ error)
 	return trans, count, sess.OrderBy(opts.OrderBy.String()).Find(&trans)
 }
 
-func TransferPoint(FromID int64, Why string, ToID int64, Qty int) (err error) {
+func TransferPoint(FromID string, Why string, ToID string, Qty int) (err error) {
 
 	sess := x.NewSession()
 
@@ -75,11 +75,11 @@ func TransferPoint(FromID int64, Why string, ToID int64, Qty int) (err error) {
 		return err
 	}
 
-	if _, err = sess.Exec("UPDATE `user` SET point = point + ? WHERE id = ?", Qty, ToID); err != nil {
+	if _, err = sess.Exec("UPDATE `user` SET point = point + ? WHERE name = ?", Qty, ToID); err != nil {
 		return err
 	}
 
-	if _, err = sess.Exec("UPDATE `user` SET point = point - ? WHERE id = ?", Qty, FromID); err != nil {
+	if _, err = sess.Exec("UPDATE `user` SET point = point - ? WHERE name = ?", Qty, FromID); err != nil {
 		return err
 	}
 	return sess.Commit()

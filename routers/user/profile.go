@@ -287,9 +287,9 @@ func TransferP(ctx *context.Context) {
 		ctx.Flash.Error("余额不足！")
 		return
 	}
-	err = models.TransferPoint(ctx.User.ID,
+	err = models.TransferPoint(ctx.User.Name,
 							   ctx.Query("why"),
-							   u.ID,
+							   u.Name,
 							   Qty)
 	if err != nil {
 		ctx.ServerError("Transfer", err)

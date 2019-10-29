@@ -15,7 +15,7 @@
 					{{end}}
 					<div class="content wrap">
 						{{if .Owner.FullName}}<span class="header text center">{{.Owner.FullName}}</span>{{end}}
-						<span class="username text center">{{.Owner.Name}} {{.Owner.Point}}</span>
+						<span class="username text center">{{.Owner.Name}}</span>
 					</div>
 					<div class="extra content wrap">
 						<ul class="text black">
@@ -48,7 +48,7 @@
 									</li>
 								{{end}}
 							{{end}}
-							<li><i class="octicon octicon-clock"></i> {{.i18n.Tr "user.join_on"}} {{.Owner.CreatedUnix.FormatShort}}</li>
+							<li><i class="octicon octicon-clock"></i> {{.i18n.Tr "user.join_on"}} {{.Owner.CreatedUnix.FormatShort}} 积分 {{.Owner.Point}}</li>
 							<li>
 								<i class="octicon octicon-person"></i>
 								<a href="{{.Owner.HomeLink}}/followers">
@@ -91,8 +91,7 @@
 							<li>
 					    <form class="ui form" id="transfer-point-form" action="{{.Link}}/action/transfer_point" method="post">
 							{{.CsrfTokenHtml}}
-							<input type="hidden" name="uid" value="{{.SignedUser.ID}}">
-							<input type="hidden" name="toid" value="{{ .Owner.ID }}">
+							<input type="hidden" name="toid" value="{{ .Owner.Name }}">
 							<div class="inline field ui left">
 									<div class="ui">
 									    <input name="why" placeholder="为什么" autocomplete="off" required>

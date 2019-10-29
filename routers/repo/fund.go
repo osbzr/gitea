@@ -40,17 +40,15 @@ func Funding(ctx *context.Context) {
 		ctx.Flash.Error("请输入数字")
 		return
 	}
-	var toid int
 	var repoid int
-	toid, err = strconv.Atoi(ctx.Query("toid"))
 	repoid, err = strconv.Atoi(ctx.Query("repoid"))
 	if ctx.User.Point < Qty {
 		ctx.Flash.Error("余额不足！")
 		return
 	}
-	err = models.TransferPoint(ctx.User.ID,
+	err = models.TransferPoint(ctx.User.Name,
 			ctx.Query("why"),
-			int64(toid),
+			ctx.Query("toid"),
 			Qty)
 	if err != nil {
 	ctx.ServerError("Transfer", err)

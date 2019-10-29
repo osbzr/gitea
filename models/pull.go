@@ -441,10 +441,6 @@ func (pr *PullRequest) SetMerged() (err error) {
 		return err
 	}
 
-	if err = pr.GetHeadRepo(); err != nil {
-		return err
-	}
-
 	if err = pr.Issue.changeStatus(sess, pr.Merger, true); err != nil {
 		return fmt.Errorf("Issue.changeStatus: %v", err)
 	}
@@ -452,21 +448,30 @@ func (pr *PullRequest) SetMerged() (err error) {
 		return fmt.Errorf("update pull request: %v", err)
 	}
 
-	err = TransferPoint(pr.BaseRepo.OwnerID,
-		"Contribution to My Project ",
-		pr.HeadRepo.OwnerID,
-		int(pr.BaseRepo.NextPoint))
+	var FromID = pr.BaseRepo.OwnerName
+    var Why = "奖励"+pr.BaseRepo.Name+ "项目的贡献"
+	var ToID = pr.HeadUserName
+	var Qty = int(pr.BaseRepo.NextPoint)
 
-	if err != nil {
+	if _, err = sess.Insert(&Transfer{FromID: FromID, ToID: ToID, Why: Why, Qty: Qty}); err != nil {
 		return fmt.Errorf("Transfer", err)
 	}
+
+	if _, err = sess.Exec("UPDATE `user` SET point = point + ? WHERE name = ?", Qty, ToID); err != nil {
+		return fmt.Errorf("Add Point", err)
+	}
+
+	if _, err = sess.Exec("UPDATE `user` SET point = point - ? WHERE name = ?", Qty, FromID); err != nil {
+		return fmt.Errorf("Subtract Point", err)
+	}
+
 	var balancePoint = pr.BaseRepo.Point - pr.BaseRepo.NextPoint
     var nextPoint = int64(float64(balancePoint) * float64(pr.BaseRepo.Percent) * 0.01)
 	pr.BaseRepo.Point = balancePoint
 	pr.BaseRepo.NextPoint = nextPoint
 	//TODO NextPoint没被更新
-	if _, err = sess.ID(pr.BaseRepo.ID).Cols("Point, NextPoint").Update(pr.BaseRepo); err != nil {
-		return fmt.Errorf("update base repo point: %v", err)
+	if _, err = sess.ID(pr.BaseRepo.ID).Cols("point, nextpoint").Update(pr.BaseRepo); err != nil {
+		return fmt.Errorf("Update base repo point: %v", err)
 	}
 
 	if err = sess.Commit(); err != nil {
