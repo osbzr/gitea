@@ -8,7 +8,7 @@
 			{{range .Trans}}
 				<div class="item">
 				  <div class="content">
-				  {{.CreatedUnix.FormatShort}} <a href="/{{.FromID}}">{{.FromID}}</a>转了{{.Qty}}积分给<a href="/{{.ToID}}">{{.ToID}}</a> ，以{{.Why}}。
+				  {{.CreatedUnix.FormatShort}} <a href="/{{.FromID}}">{{.FromID}}</a>转了{{.Qty}}积分给<a href="/{{.ToID}}">{{.ToID}}</a> ，{{.Why}}。
 				  </div>
 				</div>
 			{{else}}

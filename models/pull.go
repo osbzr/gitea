@@ -467,7 +467,15 @@ func (pr *PullRequest) SetMerged() (err error) {
 		return err
 	}
 
+    if err = pr.GetHeadRepo(); err != nil {
+		return err
+	}
+
 	if err = pr.GetBaseRepo(); err != nil {
+		return err
+	}
+
+	if err = pr.HeadRepo.GetOwner(); err != nil {
 		return err
 	}
 
@@ -480,29 +488,31 @@ func (pr *PullRequest) SetMerged() (err error) {
 
 	var FromID = pr.BaseRepo.OwnerName
     var Why = "奖励"+pr.BaseRepo.Name+ "项目的贡献"
-	var ToID = pr.HeadUserName
+	var ToID = pr.HeadRepo.Owner.Name
 	var Qty = int(pr.BaseRepo.NextPoint)
 
-	if _, err = sess.Insert(&Transfer{FromID: FromID, ToID: ToID, Why: Why, Qty: Qty}); err != nil {
-		return fmt.Errorf("Transfer", err)
-	}
+	if FromID != ToID {
 
-	if _, err = sess.Exec("UPDATE `user` SET point = point + ? WHERE name = ?", Qty, ToID); err != nil {
-		return fmt.Errorf("Add Point", err)
-	}
+		if _, err = sess.Insert(&Transfer{FromID: FromID, ToID: ToID, Why: Why, Qty: Qty}); err != nil {
+			return fmt.Errorf("Transfer", err)
+		}
 
-	if _, err = sess.Exec("UPDATE `user` SET point = point - ? WHERE name = ?", Qty, FromID); err != nil {
-		return fmt.Errorf("Subtract Point", err)
-	}
+		if _, err = sess.Exec("UPDATE `user` SET point = point + ? WHERE name = ?", Qty, ToID); err != nil {
+			return fmt.Errorf("Add Point", err)
+		}
 
-	var balancePoint = pr.BaseRepo.Point - pr.BaseRepo.NextPoint
-    var nextPoint = int64(float64(balancePoint) * float64(pr.BaseRepo.Percent) * 0.01)
-	pr.BaseRepo.Point = balancePoint
-	pr.BaseRepo.NextPoint = nextPoint
-	//TODO NextPoint没被更新
-	if _, err = sess.ID(pr.BaseRepo.ID).Cols("point, nextpoint").Update(pr.BaseRepo); err != nil {
-		return fmt.Errorf("Update base repo point: %v", err)
-	}
+		if _, err = sess.Exec("UPDATE `user` SET point = point - ? WHERE name = ?", Qty, FromID); err != nil {
+			return fmt.Errorf("Subtract Point", err)
+		}
+
+		if _, err = sess.Exec("UPDATE `repository` SET point = point - ? WHERE id = ?", Qty, pr.BaseRepo.ID); err != nil {
+			return err
+		}
+
+		if _, err = sess.Exec("UPDATE `repository` SET next_point = point * percent * 0.01 WHERE id = ?", pr.BaseRepo.ID); err != nil {
+			return err
+		}
+    }
 
 	if err = sess.Commit(); err != nil {
 		return fmt.Errorf("Commit: %v", err)
@@ -537,10 +547,10 @@ func (pr *PullRequest) manuallyMerged() bool {
 		pr.Merger = merger
 		pr.MergerID = merger.ID
 
-		if err = pr.SetMerged(); err != nil {
-			log.Error("PullRequest[%d].setMerged : %v", pr.ID, err)
-			return false
-		}
+//		if err = pr.SetMerged(); err != nil {
+//			log.Error("PullRequest[%d].setMerged : %v", pr.ID, err)
+//			return false
+//		}
 		log.Info("manuallyMerged[%d]: Marked as manually merged into %s/%s by commit id: %s", pr.ID, pr.BaseRepo.Name, pr.BaseBranch, commit.ID.String())
 		return true
 	}

@@ -62,6 +62,6 @@ func Funding(ctx *context.Context) {
 		return
 	}
 
-//	ctx.RedirectToFirst(ctx.Query("redirect_to"), u.HomeLink())
+	ctx.RedirectToFirst(ctx.Query("redirect_to"), ctx.Repo.RepoLink + "/funds")
 }
 
