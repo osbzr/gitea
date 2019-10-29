@@ -3,33 +3,22 @@
 	{{template "repo/header" .}}
 	<div class="ui container">
 		{{template "base/alert" .}}
-		{{template "repo/sub_menu" .}}
-		<h4 class="ui top attached header">
-			{{.i18n.Tr "repo.default_branch"}}
-		</h4>
-
-		<div class="ui attached table segment">
-			<table class="ui very basic striped fixed table single line">
-				<tbody>
-					<tr>
-						<td>
-							{{range .Funds}}
-								{{.Name}} {{.Qty}}
-							{{end}}
-						</td>
-						<td class="right aligned overflow-visible">
-							<form class="ui form" id="transfer-point-form" action="{{.Link}}/action/transfer_point" method="post">
-								{{.CsrfTokenHtml}}
-								<input type="hidden" name="uid" value="{{.SignedUser.ID}}">
-								<input type="hidden" name="toid" value="{{ $.Repository.Owner.ID }}">
-								<input name="why" placeholder="为什么" value="捐赠{{$.Repository.Name}}项目" autocomplete="off" required>
-								<input name="qty" placeholder="积分数" autocomplete="off" required>
-								<button class="ui green button">确定</button>
-							</form>
-						</td>
-					</tr>
-				</tbody>
-			</table>
+		<div>
+			<form class="ui form" id="transfer-point-form" action="{{.Link}}/action/funding" method="post">
+				{{.CsrfTokenHtml}}
+				<input type="hidden" name="uid" value="{{.SignedUser.ID}}">
+				<input type="hidden" name="toid" value="{{ $.Repository.Owner.ID }}">
+				<input type="hidden" name="repoid" value="{{ $.Repository.ID }}">
+				<input name="why" placeholder="为什么" value="捐赠{{$.Repository.Name}}项目" autocomplete="off" required>
+				<input name="qty" placeholder="积分数" autocomplete="off" required>
+				<button class="ui green button">确定</button>
+		</div>
+		<div>
+		<ul>
+			{{range .Funds}}
+				<li>{{.Name}} {{.Qty}}</li>
+			{{end}}
+		</ul>
 		</div>
 
 {{template "base/footer" .}}

@@ -838,8 +838,11 @@ func RegisterRoutes(m *macaron.Macaron) {
 			m.Get("/raw/*", repo.WikiRaw)
 		}, repo.MustEnableWiki)
 
-//		m.Get("/funds", repo.Funds)
-
+		m.Group("/funds", func(){
+			m.Get("", repo.Funds)
+			m.Post("/action/funding",repo.Funding)
+		},context.RepoRef())
+		
 		m.Group("/activity", func() {
 			m.Get("", repo.Activity)
 			m.Get("/:period", repo.Activity)

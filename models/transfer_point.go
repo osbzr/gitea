@@ -105,3 +105,25 @@ func GetFunds(repoID int64, page int) (FundList, error) {
 
 	return funds, sess.Find(&funds)
 }
+
+func NewFund(name string, repoID int64, qty int64)(err error){
+	sess := x.NewSession()
+
+	defer sess.Close()
+	if err = sess.Begin(); err != nil {
+		return err
+	}
+
+	if _, err = sess.Insert(&Fund{Name: name, RepoID: repoID, Qty: qty}); err != nil {
+		return err
+	}
+
+	if _, err = sess.Exec("UPDATE `repository` SET point = point + ? WHERE id = ?", qty, repoID); err != nil {
+		return err
+	}
+
+	if _, err = sess.Exec("UPDATE `repository` SET next_point = point * percent * 0.01 WHERE id = ?", repoID); err != nil {
+		return err
+	}
+	return sess.Commit()
+}
